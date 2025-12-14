@@ -10,4 +10,5 @@ export { LeaderboardScreen } from './LeaderboardScreen';
 export { EditPreferencesScreen } from './EditPreferencesScreen';
 export { TripHistoryScreen } from './TripHistoryScreen';
 export { PlanDetailsScreen } from './PlanDetailsScreen';
+export { RebootFlowScreen } from './RebootFlowScreen';
 
