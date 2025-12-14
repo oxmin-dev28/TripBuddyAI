@@ -3,7 +3,8 @@ import { Animated, StyleProp, ViewStyle } from 'react-native';
 import { fadeIn } from '../../utils/animations';
 
 interface CardProps {
-  children: React.ReactNode;
+  key?: string | number;
+  children?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   variant?: 'default' | 'elevated' | 'outlined';
   animated?: boolean;

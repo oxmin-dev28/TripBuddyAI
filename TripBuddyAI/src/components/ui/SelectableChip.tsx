@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Pressable, Text, ViewStyle } from 'react-native';
 
 interface SelectableChipProps {
+  key?: string | number;
   label: string;
   selected: boolean;
   onPress: () => void;
