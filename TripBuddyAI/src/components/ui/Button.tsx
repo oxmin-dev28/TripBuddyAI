@@ -1,28 +1,64 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
   ActivityIndicator,
-  ViewStyle,
-  TextStyle,
   Animated,
+  Pressable,
+  PressableStateCallbackType,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
 } from 'react-native';
-import { Colors, Spacing, FontSize, BorderRadius } from '../../constants/theme';
+import { Colors, BorderRadius, Spacing, FontSize, FontWeight } from '../../constants/theme';
 import { hapticBounce } from '../../utils/animations';
+
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'accent';
+export type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline' | 'accent';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   disabled?: boolean;
   loading?: boolean;
   icon?: React.ReactNode;
   style?: ViewStyle;
-  textStyle?: TextStyle;
   fullWidth?: boolean;
 }
+
+const variantStyles: Record<ButtonVariant, { container: ViewStyle; text: ViewStyle }> = {
+  primary: {
+    container: { backgroundColor: Colors.primary },
+    text: { color: Colors.textOnPrimary },
+  },
+  secondary: {
+    container: {
+      backgroundColor: Colors.background,
+      borderColor: Colors.primary,
+      borderWidth: 2,
+    },
+    text: { color: Colors.primary },
+  },
+  outline: {
+    container: {
+      backgroundColor: 'transparent',
+      borderColor: Colors.primary,
+      borderWidth: 2,
+    },
+    text: { color: Colors.primary },
+  },
+  accent: {
+    container: { backgroundColor: Colors.primaryDark },
+    text: { color: Colors.textOnPrimary },
+  },
+};
+
+const sizeStyles: Record<ButtonSize, { paddingVertical: number; paddingHorizontal: number; borderRadius: number; textSize: number }> = {
+  sm: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs + 4, borderRadius: BorderRadius.md, textSize: FontSize.sm },
+  md: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md - 2, borderRadius: BorderRadius.lg, textSize: FontSize.md },
+  lg: { paddingHorizontal: Spacing.lg + 4, paddingVertical: Spacing.md, borderRadius: BorderRadius.xl, textSize: FontSize.lg },
+};
 
 export function Button({
   title,
@@ -33,15 +69,15 @@ export function Button({
   loading = false,
   icon,
   style,
-  textStyle,
   fullWidth = false,
 }: ButtonProps) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
-    Animated.timing(scaleAnim, {
-      toValue: 0.96,
-      duration: 100,
+    Animated.spring(scaleAnim, {
+      toValue: 0.97,
+      tension: 80,
+      friction: 10,
       useNativeDriver: true,
     }).start();
   };
@@ -49,56 +85,66 @@ export function Button({
   const handlePressOut = () => {
     Animated.spring(scaleAnim, {
       toValue: 1,
-      friction: 4,
-      tension: 100,
+      tension: 120,
+      friction: 10,
       useNativeDriver: true,
     }).start();
   };
+
+  const { container: variantContainer, text: variantText } = useMemo(
+    () => variantStyles[variant],
+    [variant]
+  );
+
+  const sizeStyle = useMemo(() => sizeStyles[size], [size]);
+
+  const pressableStyle = ({ pressed }: PressableStateCallbackType) => [
+    styles.base,
+    variantContainer,
+    {
+      paddingHorizontal: sizeStyle.paddingHorizontal,
+      paddingVertical: sizeStyle.paddingVertical,
+      borderRadius: sizeStyle.borderRadius,
+      width: fullWidth ? '100%' : undefined,
+      opacity: disabled ? 0.6 : 1,
+    },
+    pressed && { transform: [{ translateY: 1 }] },
+    style,
+  ];
+
+  const textStyle = [
+    styles.textBase,
+    variantText,
+    { fontSize: sizeStyle.textSize },
+    disabled && styles.textDisabled,
+  ];
 
   const handlePress = () => {
     hapticBounce(scaleAnim);
     onPress();
   };
 
-  const buttonStyles = [
-    styles.base,
-    styles[variant],
-    styles[`size_${size}`],
-    fullWidth && styles.fullWidth,
-    disabled && styles.disabled,
-    style,
-  ];
-
-  const textStyles = [
-    styles.text,
-    styles[`text_${variant}`],
-    styles[`textSize_${size}`],
-    disabled && styles.textDisabled,
-    textStyle,
-  ];
-
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-      <TouchableOpacity
-        style={buttonStyles}
+      <Pressable
+        accessibilityRole="button"
         onPress={handlePress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         disabled={disabled || loading}
-        activeOpacity={1}
+        style={pressableStyle}
       >
         {loading ? (
-          <ActivityIndicator
-            color={variant === 'outline' ? Colors.primary : Colors.textOnPrimary}
-            size="small"
-          />
+          <ActivityIndicator color={variant === 'outline' ? Colors.primary : Colors.textOnPrimary} />
         ) : (
-          <>
+          <View style={styles.content}>
             {icon}
-            <Text style={textStyles}>{title}</Text>
-          </>
+            <Text style={textStyle} numberOfLines={1} ellipsizeMode="tail">
+              {title}
+            </Text>
+          </View>
         )}
-      </TouchableOpacity>
+      </Pressable>
     </Animated.View>
   );
 }
@@ -108,84 +154,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.sm,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    gap: 8,
   },
-  
-  // Variants
-  primary: {
-    backgroundColor: Colors.primary,
+  textBase: {
+    fontWeight: FontWeight.semibold as any,
+    letterSpacing: -0.2,
   },
-  secondary: {
-    backgroundColor: Colors.surfaceAlt,
-  },
-  outline: {
-    backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: Colors.primary,
-  },
-  accent: {
-    backgroundColor: Colors.accent,
-  },
-  
-  // Sizes
-  size_sm: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.sm,
-  },
-  size_md: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.md,
-  },
-  size_lg: {
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-  },
-  
-  fullWidth: {
-    width: '100%',
-  },
-  
-  disabled: {
-    opacity: 0.5,
-  },
-  
-  // Text styles
-  text: {
-    fontWeight: '600',
-  },
-  text_primary: {
-    color: Colors.textOnPrimary,
-  },
-  text_secondary: {
-    color: Colors.textPrimary,
-  },
-  text_outline: {
-    color: Colors.primary,
-  },
-  text_accent: {
-    color: Colors.textOnAccent,
-  },
-  
-  textSize_sm: {
-    fontSize: FontSize.sm,
-  },
-  textSize_md: {
-    fontSize: FontSize.md,
-  },
-  textSize_lg: {
-    fontSize: FontSize.lg,
-  },
-  
   textDisabled: {
-    opacity: 0.7,
+    opacity: 0.9,
+  },
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
 });
-
