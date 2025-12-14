@@ -150,6 +150,7 @@ export type RootStackParamList = {
   EditPreferences: undefined;
   TripHistory: undefined;
   PlanDetails: { planId: string };
+  RebootFlow: undefined;
 };
 
 // API Response types
