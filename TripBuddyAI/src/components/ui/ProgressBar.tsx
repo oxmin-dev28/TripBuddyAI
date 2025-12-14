@@ -1,6 +1,5 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Colors, BorderRadius } from '../../constants/theme';
+import React, { useMemo } from 'react';
+import { View } from 'react-native';
 
 interface ProgressBarProps {
   current: number;
@@ -8,27 +7,15 @@ interface ProgressBarProps {
   height?: number;
 }
 
-export function ProgressBar({ current, total, height = 4 }: ProgressBarProps) {
-  const progress = (current / total) * 100;
+export function ProgressBar({ current, total, height = 6 }: ProgressBarProps) {
+  const progress = useMemo(() => Math.min(Math.max(current / total, 0), 1) * 100, [current, total]);
 
   return (
-    <View style={[styles.container, { height }]}>
-      <View style={[styles.fill, { width: `${progress}%` }]} />
+    <View className="w-full rounded-full bg-primary/10 overflow-hidden" style={{ height }}>
+      <View
+        className="h-full rounded-full bg-primary"
+        style={{ width: `${progress}%` }}
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    backgroundColor: Colors.surfaceAlt,
-    borderRadius: BorderRadius.full,
-    overflow: 'hidden',
-  },
-  fill: {
-    height: '100%',
-    backgroundColor: Colors.accent,
-    borderRadius: BorderRadius.full,
-  },
-});
-
