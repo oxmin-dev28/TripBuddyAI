@@ -142,3 +142,92 @@ export function Button({
     </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  base: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    shadowColor: Colors.primaryDark,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  
+  // Variants
+  primary: {
+    backgroundColor: Colors.primary,
+  },
+  secondary: {
+    backgroundColor: Colors.surface,
+    borderWidth: 2,
+    borderColor: Colors.primary,
+  },
+  outline: {
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: Colors.primary,
+  },
+  accent: {
+    backgroundColor: Colors.accent,
+  },
+  
+  // Sizes
+  size_sm: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+  },
+  size_md: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
+  },
+  size_lg: {
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+  },
+  
+  fullWidth: {
+    width: '100%',
+  },
+  
+  disabled: {
+    opacity: 0.5,
+  },
+  
+  // Text styles
+  text: {
+    fontWeight: '600',
+  },
+  text_primary: {
+    color: Colors.textOnPrimary,
+  },
+  text_secondary: {
+    color: Colors.textPrimary,
+  },
+  text_outline: {
+    color: Colors.primary,
+  },
+  text_accent: {
+    color: Colors.textOnAccent,
+  },
+  
+  textSize_sm: {
+    fontSize: FontSize.sm,
+  },
+  textSize_md: {
+    fontSize: FontSize.md,
+  },
+  textSize_lg: {
+    fontSize: FontSize.lg,
+  },
+  
+  textDisabled: {
+    opacity: 0.7,
+  },
+});
+
