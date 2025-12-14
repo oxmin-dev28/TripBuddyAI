@@ -117,6 +117,11 @@ export function Button({
     pressed && { transform: [{ translateY: 1 }] },
   ];
 
+  const handlePress = () => {
+    hapticBounce(scaleAnim);
+    onPress();
+  };
+
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
       <Pressable

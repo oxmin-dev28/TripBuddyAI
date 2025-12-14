@@ -51,4 +51,6 @@ export function Card({
       {children}
     </Animated.View>
   );
+
+  return <Animated.View style={containerStyle}>{children}</Animated.View>;
 }
