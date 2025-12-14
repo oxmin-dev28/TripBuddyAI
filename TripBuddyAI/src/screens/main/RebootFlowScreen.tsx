@@ -145,7 +145,14 @@ export function RebootFlowScreen({ navigation }: Props) {
                     : styles.intentCard
                 }
               >
-                <Text style={styles.cardTitle}>{option}</Text>
+                <Text
+                  style={[
+                    styles.cardTitle,
+                    selectedIntent === option && styles.cardTitleSelected,
+                  ]}
+                >
+                  {option}
+                </Text>
                 <Button
                   title={selectedIntent === option ? 'Выбрано' : 'Выбрать'}
                   size="sm"
@@ -377,6 +384,9 @@ const styles = StyleSheet.create({
     fontSize: FontSize.lg,
     fontWeight: '700',
     color: Colors.textPrimary,
+  },
+  cardTitleSelected: {
+    color: Colors.textOnPrimary,
   },
   selectedCard: {
     borderColor: Colors.primary,

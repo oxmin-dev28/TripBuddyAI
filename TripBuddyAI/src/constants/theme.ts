@@ -1,38 +1,36 @@
 // TripBuddy AI Design System
 
 export const Colors = {
-  // Primary palette
-  primary: '#1E3A8A',
-  primaryDark: '#172554',
-  primaryLight: '#3B82F6',
-  
-  // Accent
-  accent: '#F97316',
-  accentDark: '#EA580C',
-  accentLight: '#FB923C',
-  
-  // Status
-  success: '#10B981',
-  successLight: '#34D399',
-  warning: '#FBBF24',
-  error: '#EF4444',
-  errorLight: '#FEE2E2',
-  
-  // Neutrals
-  background: '#F8FAFC',
-  surface: '#FFFFFF',
-  surfaceAlt: '#F1F5F9',
-  border: '#E2E8F0',
-  
+  // Core palette (restricted to the four approved tones)
+  background: '#F5F8FC',
+  surface: '#F5F8FC',
+  surfaceAlt: '#1E2A44',
+  border: '#1E2A44',
+
+  primary: '#1E2A44',
+  primaryDark: '#141D2D',
+  primaryLight: '#0E141E',
+
+  accent: '#1E2A44',
+  accentDark: '#141D2D',
+  accentLight: '#0E141E',
+
+  // Status mapped to the approved palette to avoid extra colors
+  success: '#1E2A44',
+  successLight: '#1E2A44',
+  warning: '#141D2D',
+  error: '#141D2D',
+  errorLight: '#F5F8FC',
+
   // Text
-  textPrimary: '#0F172A',
-  textSecondary: '#475569',
-  textMuted: '#94A3B8',
-  textOnPrimary: '#FFFFFF',
-  textOnAccent: '#FFFFFF',
-  
+  textPrimary: '#0E141E',
+  textSecondary: '#141D2D',
+  textMuted: '#1E2A44',
+  textOnPrimary: '#F5F8FC',
+  textOnAccent: '#F5F8FC',
+
   // Overlays
-  overlay: 'rgba(15, 23, 42, 0.5)',
+  overlay: 'rgba(14, 20, 30, 0.5)',
 } as const;
 
 export const Spacing = {

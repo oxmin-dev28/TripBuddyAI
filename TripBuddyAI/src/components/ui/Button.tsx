@@ -109,10 +109,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    shadowColor: '#000',
+    shadowColor: Colors.primaryDark,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
     elevation: 3,
   },
   
@@ -121,7 +121,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
   },
   secondary: {
-    backgroundColor: Colors.surfaceAlt,
+    backgroundColor: Colors.surface,
+    borderWidth: 2,
+    borderColor: Colors.primary,
   },
   outline: {
     backgroundColor: 'transparent',
