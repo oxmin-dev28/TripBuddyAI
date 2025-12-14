@@ -1,6 +1,5 @@
-import React, { useRef, useEffect } from 'react';
-import { Animated, StyleSheet, ViewStyle, StyleProp } from 'react-native';
-import { Colors, Spacing, BorderRadius } from '../../constants/theme';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Animated, StyleProp, ViewStyle } from 'react-native';
 import { fadeIn } from '../../utils/animations';
 
 interface CardProps {
@@ -9,19 +8,45 @@ interface CardProps {
   variant?: 'default' | 'elevated' | 'outlined';
   animated?: boolean;
   delay?: number;
+  className?: string;
 }
 
-export function Card({ children, style, variant = 'default', animated = false, delay = 0 }: CardProps) {
+const variantClassNames: Record<NonNullable<CardProps['variant']>, string> = {
+  default: 'bg-surface shadow-soft',
+  elevated: 'bg-surface shadow-card',
+  outlined: 'bg-surface border border-primary/40',
+};
+
+export function Card({
+  children,
+  style,
+  variant = 'default',
+  animated = false,
+  delay = 0,
+  className,
+}: CardProps) {
   const fadeAnim = useRef(new Animated.Value(animated ? 0 : 1)).current;
 
   useEffect(() => {
     if (animated) {
-      fadeIn(fadeAnim, 300, delay).start();
+      fadeIn(fadeAnim, 280, delay).start();
     }
-  }, [animated, delay]);
+  }, [animated, delay, fadeAnim]);
+
+  const containerClassName = useMemo(() => {
+    const parts = [
+      'rounded-3xl p-4',
+      variantClassNames[variant],
+      className ?? '',
+    ];
+    return parts.filter(Boolean).join(' ');
+  }, [className, variant]);
 
   return (
-    <Animated.View style={[styles.card, styles[variant], style, animated && { opacity: fadeAnim }]}>
+    <Animated.View
+      className={containerClassName}
+      style={[style, animated && { opacity: fadeAnim }]}
+    >
       {children}
     </Animated.View>
   );
