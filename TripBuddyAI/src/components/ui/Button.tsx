@@ -4,12 +4,10 @@ import {
   Animated,
   Pressable,
   PressableStateCallbackType,
-  StyleSheet,
   Text,
   View,
   ViewStyle,
 } from 'react-native';
-import { Colors, BorderRadius, Spacing, FontSize, FontWeight } from '../../constants/theme';
 import { hapticBounce } from '../../utils/animations';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'accent';
@@ -25,39 +23,33 @@ interface ButtonProps {
   icon?: React.ReactNode;
   style?: ViewStyle;
   fullWidth?: boolean;
+  className?: string;
 }
 
-const variantStyles: Record<ButtonVariant, { container: ViewStyle; text: ViewStyle }> = {
-  primary: {
-    container: { backgroundColor: Colors.primary },
-    text: { color: Colors.textOnPrimary },
-  },
-  secondary: {
-    container: {
-      backgroundColor: Colors.background,
-      borderColor: Colors.primary,
-      borderWidth: 2,
-    },
-    text: { color: Colors.primary },
-  },
-  outline: {
-    container: {
-      backgroundColor: 'transparent',
-      borderColor: Colors.primary,
-      borderWidth: 2,
-    },
-    text: { color: Colors.primary },
-  },
-  accent: {
-    container: { backgroundColor: Colors.primaryDark },
-    text: { color: Colors.textOnPrimary },
-  },
+const variantClassNames: Record<ButtonVariant, string> = {
+  primary: 'bg-primary shadow-soft',
+  secondary: 'bg-background border-2 border-primary shadow-soft',
+  outline: 'bg-transparent border-2 border-primary shadow-soft',
+  accent: 'bg-ink shadow-soft',
 };
 
-const sizeStyles: Record<ButtonSize, { paddingVertical: number; paddingHorizontal: number; borderRadius: number; textSize: number }> = {
-  sm: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs + 4, borderRadius: BorderRadius.md, textSize: FontSize.sm },
-  md: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md - 2, borderRadius: BorderRadius.lg, textSize: FontSize.md },
-  lg: { paddingHorizontal: Spacing.lg + 4, paddingVertical: Spacing.md, borderRadius: BorderRadius.xl, textSize: FontSize.lg },
+const textVariantClassNames: Record<ButtonVariant, string> = {
+  primary: 'text-background',
+  secondary: 'text-primary',
+  outline: 'text-primary',
+  accent: 'text-background',
+};
+
+const sizeClassNames: Record<ButtonSize, string> = {
+  sm: 'px-3 py-2 rounded-lg',
+  md: 'px-4 py-3 rounded-xl',
+  lg: 'px-5 py-3.5 rounded-2xl',
+};
+
+const textSizeClassNames: Record<ButtonSize, string> = {
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-lg',
 };
 
 export function Button({
@@ -70,6 +62,7 @@ export function Button({
   icon,
   style,
   fullWidth = false,
+  className,
 }: ButtonProps) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -91,32 +84,37 @@ export function Button({
     }).start();
   };
 
-  const { container: variantContainer, text: variantText } = useMemo(
-    () => variantStyles[variant],
-    [variant]
-  );
+  const combinedClassName = useMemo(() => {
+    const parts = [
+      'flex-row items-center justify-center gap-2',
+      sizeClassNames[size],
+      variantClassNames[variant],
+      fullWidth ? 'w-full' : '',
+      disabled ? 'opacity-60' : '',
+      className ?? '',
+    ];
+    return parts.filter(Boolean).join(' ');
+  }, [className, disabled, fullWidth, size, variant]);
 
-  const sizeStyle = useMemo(() => sizeStyles[size], [size]);
+  const textClassName = useMemo(() => {
+    return [
+      'font-semibold tracking-tight',
+      textVariantClassNames[variant],
+      textSizeClassNames[size],
+      disabled ? 'opacity-90' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }, [disabled, size, variant]);
+
+  const handlePress = () => {
+    hapticBounce(scaleAnim);
+    onPress();
+  };
 
   const pressableStyle = ({ pressed }: PressableStateCallbackType) => [
-    styles.base,
-    variantContainer,
-    {
-      paddingHorizontal: sizeStyle.paddingHorizontal,
-      paddingVertical: sizeStyle.paddingVertical,
-      borderRadius: sizeStyle.borderRadius,
-      width: fullWidth ? '100%' : undefined,
-      opacity: disabled ? 0.6 : 1,
-    },
-    pressed && { transform: [{ translateY: 1 }] },
     style,
-  ];
-
-  const textStyle = [
-    styles.textBase,
-    variantText,
-    { fontSize: sizeStyle.textSize },
-    disabled && styles.textDisabled,
+    pressed && { transform: [{ translateY: 1 }] },
   ];
 
   const handlePress = () => {
@@ -132,14 +130,15 @@ export function Button({
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         disabled={disabled || loading}
+        className={combinedClassName}
         style={pressableStyle}
       >
         {loading ? (
-          <ActivityIndicator color={variant === 'outline' ? Colors.primary : Colors.textOnPrimary} />
+          <ActivityIndicator color={variant === 'outline' ? '#1E2A44' : '#F5F8FC'} />
         ) : (
-          <View style={styles.content}>
+          <View className="flex-row items-center gap-2">
             {icon}
-            <Text style={textStyle} numberOfLines={1} ellipsizeMode="tail">
+            <Text className={textClassName} numberOfLines={1} ellipsizeMode="tail">
               {title}
             </Text>
           </View>
@@ -148,24 +147,3 @@ export function Button({
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  textBase: {
-    fontWeight: FontWeight.semibold as any,
-    letterSpacing: -0.2,
-  },
-  textDisabled: {
-    opacity: 0.9,
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-});

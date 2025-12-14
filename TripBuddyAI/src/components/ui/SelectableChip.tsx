@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
-import { Colors, BorderRadius, Spacing, FontSize, FontWeight } from '../../constants/theme';
+import { Pressable, Text, ViewStyle } from 'react-native';
 
 interface SelectableChipProps {
   key?: string | number;
@@ -10,12 +9,13 @@ interface SelectableChipProps {
   emoji?: string;
   style?: ViewStyle;
   size?: 'sm' | 'md' | 'lg';
+  className?: string;
 }
 
-const sizeStyles: Record<NonNullable<SelectableChipProps['size']>, { paddingHorizontal: number; paddingVertical: number; borderRadius: number; textSize: number }> = {
-  sm: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs, borderRadius: BorderRadius.md, textSize: FontSize.sm },
-  md: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, borderRadius: BorderRadius.lg, textSize: FontSize.md },
-  lg: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md - 2, borderRadius: BorderRadius.xl, textSize: FontSize.lg },
+const sizeClassNames: Record<NonNullable<SelectableChipProps['size']>, string> = {
+  sm: 'px-3 py-1.5 rounded-lg',
+  md: 'px-4 py-2 rounded-xl',
+  lg: 'px-5 py-2.5 rounded-2xl',
 };
 
 export function SelectableChip({
@@ -25,49 +25,32 @@ export function SelectableChip({
   emoji,
   style,
   size = 'md',
+  className,
 }: SelectableChipProps) {
-  const palette = useMemo(() => {
-    return selected
-      ? {
-          backgroundColor: Colors.primary,
-          borderColor: Colors.primary,
-          textColor: Colors.textOnPrimary,
-        }
-      : {
-          backgroundColor: Colors.surface,
-          borderColor: Colors.primary,
-          textColor: Colors.textPrimary,
-        };
-  }, [selected]);
+  const chipClassName = useMemo(() => {
+    const base = 'flex-row items-center gap-2 border shadow-soft';
+    const palette = selected
+      ? 'bg-primary border-primary'
+      : 'bg-surface border-primary/30';
+    return [base, palette, sizeClassNames[size], className ?? '']
+      .filter(Boolean)
+      .join(' ');
+  }, [className, selected, size]);
 
-  const sizing = useMemo(() => sizeStyles[size], [size]);
+  const textClassName = selected
+    ? 'text-background font-semibold'
+    : 'text-ink font-semibold';
 
   return (
     <Pressable
       onPress={onPress}
+      className={chipClassName}
+      style={style}
       accessibilityRole="button"
-      style={[
-        styles.base,
-        {
-          backgroundColor: palette.backgroundColor,
-          borderColor: palette.borderColor,
-          paddingHorizontal: sizing.paddingHorizontal,
-          paddingVertical: sizing.paddingVertical,
-          borderRadius: sizing.borderRadius,
-        },
-        style,
-      ]}
     >
-      {emoji && (
-        <Text style={styles.emoji} accessibilityElementsHidden>
-          {emoji}
-        </Text>
-      )}
+      {emoji && <Text className="text-lg" accessibilityElementsHidden>{emoji}</Text>}
       <Text
-        style={[
-          styles.text,
-          { color: palette.textColor, fontSize: sizing.textSize },
-        ]}
+        className={`${textClassName} text-sm`}
         numberOfLines={2}
         ellipsizeMode="tail"
       >
@@ -76,24 +59,3 @@ export function SelectableChip({
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  text: {
-    fontWeight: FontWeight.semibold as any,
-  },
-  emoji: {
-    fontSize: FontSize.lg,
-    marginRight: Spacing.xs,
-  },
-});

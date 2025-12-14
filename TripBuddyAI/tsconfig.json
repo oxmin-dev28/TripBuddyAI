@@ -16,4 +16,8 @@
     "dist",
     "build"
   ]
+    "strict": true,
+    "noEmit": true
+  },
+  "include": ["**/*.ts", "**/*.tsx", "global.d.ts"]
 }

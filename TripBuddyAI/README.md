@@ -21,9 +21,10 @@
 ## Что осталось в коде
 
 - `AppNavigator` ведёт сразу на `RebootFlowScreen`.
-- UI-примитивы (`Button`, `Card`, `SelectableChip`, `ProgressBar`) используют обычные `StyleSheet`-стили на четырёх закреплённых цветах — без Babel-плагинов и tailwind.
+- UI-примитивы (`Button`, `Card`, `SelectableChip`, `ProgressBar`) стилизованы через Tailwind/nativewind и придерживаются палитры.
 - Лишние сервисы, экранные стеки, хранилище и мок-данные удалены, чтобы не мешали демо.
 
 ## Подсказки по сборке
 - Если Expo попросит аккаунт, нажимай **Proceed anonymously**.
 - При ошибках npm/registry попробуй `npm install --legacy-peer-deps`.
+

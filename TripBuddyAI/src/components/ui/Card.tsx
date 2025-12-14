@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import { Animated, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { Colors, BorderRadius, Spacing } from '../../constants/theme';
+import { Animated, StyleProp, ViewStyle } from 'react-native';
 import { fadeIn } from '../../utils/animations';
 
 interface CardProps {
@@ -10,33 +9,23 @@ interface CardProps {
   variant?: 'default' | 'elevated' | 'outlined';
   animated?: boolean;
   delay?: number;
+  className?: string;
 }
 
-const variantStyles: Record<NonNullable<CardProps['variant']>, ViewStyle> = {
-  default: {
-    backgroundColor: Colors.surface,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  elevated: {
-    backgroundColor: Colors.surface,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowOffset: { width: 0, height: 8 },
-    shadowRadius: 16,
-    elevation: 3,
-  },
-  outlined: {
-    backgroundColor: Colors.surface,
-    borderColor: Colors.primary,
-    borderWidth: 1,
-  },
+const variantClassNames: Record<NonNullable<CardProps['variant']>, string> = {
+  default: 'bg-surface shadow-soft',
+  elevated: 'bg-surface shadow-card',
+  outlined: 'bg-surface border border-primary/40',
 };
 
-export function Card({ children, style, variant = 'default', animated = false, delay = 0 }: CardProps) {
+export function Card({
+  children,
+  style,
+  variant = 'default',
+  animated = false,
+  delay = 0,
+  className,
+}: CardProps) {
   const fadeAnim = useRef(new Animated.Value(animated ? 0 : 1)).current;
 
   useEffect(() => {
@@ -45,17 +34,23 @@ export function Card({ children, style, variant = 'default', animated = false, d
     }
   }, [animated, delay, fadeAnim]);
 
-  const containerStyle = useMemo(
-    () => [styles.base, variantStyles[variant], style, animated && { opacity: fadeAnim }],
-    [animated, fadeAnim, style, variant]
+  const containerClassName = useMemo(() => {
+    const parts = [
+      'rounded-3xl p-4',
+      variantClassNames[variant],
+      className ?? '',
+    ];
+    return parts.filter(Boolean).join(' ');
+  }, [className, variant]);
+
+  return (
+    <Animated.View
+      className={containerClassName}
+      style={[style, animated && { opacity: fadeAnim }]}
+    >
+      {children}
+    </Animated.View>
   );
 
   return <Animated.View style={containerStyle}>{children}</Animated.View>;
 }
-
-const styles = StyleSheet.create({
-  base: {
-    borderRadius: BorderRadius.xl,
-    padding: Spacing.lg,
-  },
-});

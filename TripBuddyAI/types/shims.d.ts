@@ -64,3 +64,5 @@ declare module '@expo/vector-icons' {
   export const MaterialCommunityIcons: any;
 }
 
+declare module 'nativewind';
+declare module 'nativewind/themes';
