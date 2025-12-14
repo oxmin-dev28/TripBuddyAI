@@ -32,6 +32,7 @@ import {
   EditPreferencesScreen,
   TripHistoryScreen,
   PlanDetailsScreen,
+  RebootFlowScreen,
 } from '../screens/main';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -102,6 +103,7 @@ export function AppNavigator() {
         <Stack.Screen name="EditPreferences" component={EditPreferencesScreen} />
         <Stack.Screen name="TripHistory" component={TripHistoryScreen} />
         <Stack.Screen name="PlanDetails" component={PlanDetailsScreen} />
+        <Stack.Screen name="RebootFlow" component={RebootFlowScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

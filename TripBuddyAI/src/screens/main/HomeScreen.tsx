@@ -99,6 +99,10 @@ export function HomeScreen({ navigation }: Props) {
     navigation.navigate('SelectCountry');
   };
 
+  const handleOpenRebootFlow = () => {
+    navigation.navigate('RebootFlow');
+  };
+
   const handleOpenMap = () => {
     // Open map in explore mode - uses current GPS location
     navigation.navigate('Map', { mode: 'explore' });
@@ -205,6 +209,27 @@ export function HomeScreen({ navigation }: Props) {
             />
           </View>
         </View>
+
+        {/* Reboot Scenario CTA */}
+        <Card style={styles.rebootCard} variant="elevated">
+          <Text style={styles.rebootTitle}>Перезагрузка на 4 дня</Text>
+          <Text style={styles.rebootSubtitle}>
+            Два безопасных варианта: A — ближе и быстрее, B — теплее и спокойнее.
+            Один клик, и мы покажем билеты, районы и скелет маршрута.
+          </Text>
+          <View style={styles.rebootBullets}>
+            <Text style={styles.rebootBullet}>• Минимум выбора: темп, настроение и окно даты</Text>
+            <Text style={styles.rebootBullet}>• Скелет 4 дней + районы без лишних решений</Text>
+            <Text style={styles.rebootBullet}>• CTA сразу на билеты или сохранить план</Text>
+          </View>
+          <Button
+            title="Запустить демо"
+            onPress={handleOpenRebootFlow}
+            variant="outline"
+            size="lg"
+            fullWidth
+          />
+        </Card>
 
         {/* Map Preview */}
         <TouchableOpacity onPress={handleOpenMap} activeOpacity={0.8}>
@@ -387,6 +412,28 @@ const styles = StyleSheet.create({
   },
   ctaButton: {
     backgroundColor: Colors.accent,
+  },
+  rebootCard: {
+    marginBottom: Spacing.lg,
+    padding: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  rebootTitle: {
+    fontSize: FontSize.xl,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+  },
+  rebootSubtitle: {
+    fontSize: FontSize.md,
+    color: Colors.textSecondary,
+    lineHeight: 20,
+  },
+  rebootBullets: {
+    gap: Spacing.xs,
+  },
+  rebootBullet: {
+    fontSize: FontSize.md,
+    color: Colors.textSecondary,
   },
   mapPreview: {
     marginBottom: Spacing.lg,
