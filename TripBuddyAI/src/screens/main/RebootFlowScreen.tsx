@@ -1,20 +1,20 @@
 import React, { useMemo, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button, Card, ProgressBar, SelectableChip } from '../../components/ui';
+import { Colors, Spacing, FontSize, BorderRadius } from '../../constants/theme';
 import { RootStackParamList } from '../../types';
 
 const intentOptions = [
-  { label: 'Перезагрузка на 4 дня', icon: 'battery-heart' },
-  { label: 'Тёплое и медленное', icon: 'white-balance-sunny' },
-  { label: 'Дёшево и сердито', icon: 'piggy-bank-outline' },
-  { label: 'Вау-впечатления', icon: 'sparkles' },
-  { label: 'Еда и бары', icon: 'silverware-fork-knife' },
-  { label: 'Природа и тишина', icon: 'pine-tree' },
-  { label: 'Романтика', icon: 'heart-outline' },
-  { label: 'Спонтанный уикенд', icon: 'airplane-takeoff' },
+  'Перезагрузка на 4 дня',
+  'Тёплое и медленное',
+  'Дёшево и сердито',
+  'Вау-впечатления',
+  'Еда и бары',
+  'Природа и тишина',
+  'Романтика',
+  'Спонтанный уикенд',
 ];
 
 const timingOptions = ['Следующие выходные', 'Конкретные даты', 'В течение месяца'];
@@ -134,39 +134,30 @@ export function RebootFlowScreen({ navigation }: Props) {
     switch (step) {
       case 1:
         return (
-          <View className="flex-row flex-wrap gap-3">
+          <View style={styles.cardsGrid}>
             {intentOptions.map(option => (
               <Card
-                key={option.label}
-                variant={selectedIntent === option.label ? 'elevated' : 'outlined'}
-                className="basis-[48%] min-w-[48%] space-y-3"
+                key={option}
+                variant={selectedIntent === option ? 'elevated' : 'outlined'}
+                style={
+                  selectedIntent === option
+                    ? [styles.intentCard, styles.selectedCard]
+                    : styles.intentCard
+                }
               >
-                <View className="flex-row items-center gap-2">
-                  <MaterialCommunityIcons
-                    name={option.icon as any}
-                    size={22}
-                    color={selectedIntent === option.label ? '#F5F8FC' : '#1E2A44'}
-                    style={{
-                      backgroundColor:
-                        selectedIntent === option.label ? '#1E2A44' : 'rgba(30, 42, 68, 0.08)',
-                      borderRadius: 999,
-                      padding: 8,
-                    }}
-                  />
-                  <Text
-                    className={`text-base font-semibold leading-5 ${
-                      selectedIntent === option.label ? 'text-ink' : 'text-ink'
-                    }`}
-                  >
-                    {option.label}
-                  </Text>
-                </View>
+                <Text
+                  style={[
+                    styles.cardTitle,
+                    selectedIntent === option && styles.cardTitleSelected,
+                  ]}
+                >
+                  {option}
+                </Text>
                 <Button
-                  title={selectedIntent === option.label ? 'Выбрано' : 'Выбрать вариант'}
+                  title={selectedIntent === option ? 'Выбрано' : 'Выбрать'}
                   size="sm"
-                  onPress={() => setSelectedIntent(option.label)}
-                  variant={selectedIntent === option.label ? 'accent' : 'outline'}
-                  icon={<Feather name="check-circle" size={16} color={selectedIntent === option.label ? '#F5F8FC' : '#1E2A44'} />}
+                  onPress={() => setSelectedIntent(option)}
+                  variant={selectedIntent === option ? 'accent' : 'outline'}
                 />
               </Card>
             ))}
@@ -174,182 +165,126 @@ export function RebootFlowScreen({ navigation }: Props) {
         );
       case 2:
         return (
-          <View className="space-y-4">
-            <View className="space-y-2">
-              <View className="flex-row items-center gap-2">
-                <Feather name="map-pin" size={18} color="#1E2A44" />
-                <Text className="text-lg font-bold text-ink">Откуда летишь?</Text>
-              </View>
-              <View className="flex-row flex-wrap gap-2">
-                {['Москва', 'Стамбул', 'Варшава', 'Берлин'].map(city => (
-                  <SelectableChip
-                    key={city}
-                    label={city}
-                    selected={departureCity === city}
-                    onPress={() => setDepartureCity(city)}
-                  />
-                ))}
-              </View>
+          <View style={styles.stepSection}>
+            <Text style={styles.sectionLabel}>Откуда летишь?</Text>
+            <View style={styles.inlineChips}>
+              {['Москва', 'Стамбул', 'Варшава', 'Берлин'].map(city => (
+                <SelectableChip
+                  key={city}
+                  label={city}
+                  selected={departureCity === city}
+                  onPress={() => setDepartureCity(city)}
+                />
+              ))}
             </View>
 
-            <View className="space-y-2">
-              <View className="flex-row items-center gap-2">
-                <Feather name="calendar" size={18} color="#1E2A44" />
-                <Text className="text-lg font-bold text-ink">Когда?</Text>
-              </View>
-              <View className="flex-row flex-wrap gap-2">
-                {timingOptions.map(option => (
-                  <SelectableChip
-                    key={option}
-                    label={option}
-                    selected={timing === option}
-                    onPress={() => setTiming(option)}
-                  />
-                ))}
-              </View>
+            <Text style={styles.sectionLabel}>Когда?</Text>
+            <View style={styles.inlineChips}>
+              {timingOptions.map(option => (
+                <SelectableChip
+                  key={option}
+                  label={option}
+                  selected={timing === option}
+                  onPress={() => setTiming(option)}
+                />
+              ))}
             </View>
 
-            <View className="space-y-2">
-              <View className="flex-row items-center gap-2">
-                <Feather name="clock" size={18} color="#1E2A44" />
-                <Text className="text-lg font-bold text-ink">Длительность</Text>
-              </View>
-              <View className="flex-row flex-wrap gap-2">
-                {durationOptions.map(option => (
-                  <SelectableChip
-                    key={option}
-                    label={option}
-                    selected={duration === option}
-                    onPress={() => setDuration(option)}
-                  />
-                ))}
-              </View>
+            <Text style={styles.sectionLabel}>Длительность</Text>
+            <View style={styles.inlineChips}>
+              {durationOptions.map(option => (
+                <SelectableChip
+                  key={option}
+                  label={option}
+                  selected={duration === option}
+                  onPress={() => setDuration(option)}
+                />
+              ))}
             </View>
           </View>
         );
       case 3:
         return (
-          <View className="space-y-4">
-            <View className="space-y-2">
-              <View className="flex-row items-center gap-2">
-                <Ionicons name="pulse-outline" size={18} color="#1E2A44" />
-                <Text className="text-lg font-bold text-ink">Темп</Text>
-              </View>
-              <View className="flex-row flex-wrap gap-2">
-                {paceOptions.map(option => (
-                  <SelectableChip
-                    key={option}
-                    label={option}
-                    selected={pace === option}
-                    onPress={() => setPace(option)}
-                  />
-                ))}
-              </View>
+          <View style={styles.stepSection}>
+            <Text style={styles.sectionLabel}>Темп</Text>
+            <View style={styles.inlineChips}>
+              {paceOptions.map(option => (
+                <SelectableChip
+                  key={option}
+                  label={option}
+                  selected={pace === option}
+                  onPress={() => setPace(option)}
+                />
+              ))}
             </View>
 
-            <View className="space-y-2">
-              <View className="flex-row items-center gap-2">
-                <MaterialCommunityIcons name="emoticon-happy-outline" size={18} color="#1E2A44" />
-                <Text className="text-lg font-bold text-ink">Настроение (1–2 клика)</Text>
-              </View>
-              <View className="flex-row flex-wrap gap-2">
-                {focusOptions.map(option => (
-                  <SelectableChip
-                    key={option}
-                    label={option}
-                    selected={focus.includes(option)}
-                    onPress={() => toggleFocus(option)}
-                  />
-                ))}
-              </View>
+            <Text style={styles.sectionLabel}>Настроение (1–2 клика)</Text>
+            <View style={styles.inlineChips}>
+              {focusOptions.map(option => (
+                <SelectableChip
+                  key={option}
+                  label={option}
+                  selected={focus.includes(option)}
+                  onPress={() => toggleFocus(option)}
+                />
+              ))}
             </View>
 
-            <View className="space-y-2">
-              <View className="flex-row items-center gap-2">
-                <Feather name="thermometer" size={18} color="#1E2A44" />
-                <Text className="text-lg font-bold text-ink">Климат / Бюджет</Text>
-              </View>
-              <View className="flex-row flex-wrap gap-2">
-                {climateOptions.map(option => (
-                  <SelectableChip
-                    key={option}
-                    label={option}
-                    selected={climate === option}
-                    onPress={() => setClimate(option)}
-                  />
-                ))}
-              </View>
-              <View className="flex-row flex-wrap gap-2 pt-2">
-                {budgetOptions.map(option => (
-                  <SelectableChip
-                    key={option}
-                    label={option}
-                    selected={budget === option}
-                    onPress={() => setBudget(option)}
-                  />
-                ))}
-              </View>
+            <Text style={styles.sectionLabel}>Климат / Бюджет</Text>
+            <View style={styles.inlineChips}>
+              {climateOptions.map(option => (
+                <SelectableChip
+                  key={option}
+                  label={option}
+                  selected={climate === option}
+                  onPress={() => setClimate(option)}
+                />
+              ))}
+            </View>
+            <View style={[styles.inlineChips, styles.topSpacing]}>
+              {budgetOptions.map(option => (
+                <SelectableChip
+                  key={option}
+                  label={option}
+                  selected={budget === option}
+                  onPress={() => setBudget(option)}
+                />
+              ))}
             </View>
           </View>
         );
       case 4:
         return (
-          <View className="space-y-4">
-            <Text className="text-sm text-ink/70">
+          <View style={styles.resultContainer}>
+            <Text style={styles.callout}>
               {selectedIntent} • {departureCity} → старт через {timing.toLowerCase()}
             </Text>
             {variants.map(variant => (
-              <Card key={variant.id} variant="elevated" className="space-y-4">
-                <View className="flex-row items-start justify-between gap-3">
-                  <View className="flex-1 space-y-1">
-                    <Text className="text-xs font-medium text-ink/60">Вариант {variant.id}</Text>
-                    <Text className="text-2xl font-extrabold text-ink">{variant.city}</Text>
-                    <Text className="text-base text-ink/70 leading-5" numberOfLines={2}>
-                      {variant.tagline}
-                    </Text>
+              <Card key={variant.id} style={styles.variantCard} variant="elevated">
+                <View style={styles.variantHeader}>
+                  <View>
+                    <Text style={styles.variantLabel}>Вариант {variant.id}</Text>
+                    <Text style={styles.variantCity}>{variant.city}</Text>
+                    <Text style={styles.variantTagline}>{variant.tagline}</Text>
                   </View>
-                  <Button
-                    title="Билеты"
-                    size="sm"
-                    onPress={() => setStep(5)}
-                    icon={<Feather name="external-link" size={16} color="#F5F8FC" />}
-                  />
+                  <Button title="Билеты" size="sm" onPress={() => setStep(5)} />
                 </View>
 
-                <View className="space-y-2">
-                  <View className="flex-row items-center gap-2">
-                    <Feather name="thumbs-up" size={16} color="#1E2A44" />
-                    <Text className="text-lg font-bold text-ink">Почему тебе зайдёт</Text>
-                  </View>
-                  {variant.why.map(point => (
-                    <Text key={point} className="text-base leading-6 text-ink/80">
-                      • {point}
-                    </Text>
+                <Text style={styles.subheading}>Почему тебе зайдёт</Text>
+                {variant.why.map(point => (
+                  <Text key={point} style={styles.bullet}>• {point}</Text>
+                ))}
+
+                <Text style={styles.subheading}>Скелет 4 дней</Text>
+                {variant.skeleton.map(line => (
+                  <Text key={line} style={styles.bullet}>• {line}</Text>
+                ))}
+
+                <Text style={styles.subheading}>Районы без лишних решений</Text>
+                <View style={styles.inlineChips}>
+                  {variant.areas.map(area => (
+                    <SelectableChip key={area} label={area} selected onPress={() => {}} />
                   ))}
-                </View>
-
-                <View className="space-y-2">
-                  <View className="flex-row items-center gap-2">
-                    <Feather name="calendar" size={16} color="#1E2A44" />
-                    <Text className="text-lg font-bold text-ink">Скелет 4 дней</Text>
-                  </View>
-                  {variant.skeleton.map(line => (
-                    <Text key={line} className="text-base leading-6 text-ink/80">
-                      • {line}
-                    </Text>
-                  ))}
-                </View>
-
-                <View className="space-y-2">
-                  <View className="flex-row items-center gap-2">
-                    <Feather name="home" size={16} color="#1E2A44" />
-                    <Text className="text-lg font-bold text-ink">Районы без лишних решений</Text>
-                  </View>
-                  <View className="flex-row flex-wrap gap-2">
-                    {variant.areas.map(area => (
-                      <SelectableChip key={area} label={area} selected onPress={() => {}} size="sm" />
-                    ))}
-                  </View>
                 </View>
               </Card>
             ))}
@@ -357,34 +292,17 @@ export function RebootFlowScreen({ navigation }: Props) {
         );
       default:
         return (
-          <View className="space-y-4">
-            <Text className="text-sm text-ink/70">Даты подставлены: {timing.toLowerCase()}</Text>
-            <Card variant="elevated" className="space-y-3">
-              <View className="flex-row items-center justify-between">
-                <Text className="text-xl font-extrabold text-ink">Лучшие окна</Text>
-                <Feather name="ticket" size={20} color="#1E2A44" />
-              </View>
-              <Text className="text-base text-ink/80">Вылет: {departureCity} → {variants[0].city} / {variants[1].city}</Text>
-              <Text className="text-base text-ink/80">Длительность: {duration}</Text>
-              <Text className="text-base text-ink/80">Бюджет: {budget} • Климат: {climate}</Text>
-              <Text className="text-sm text-ink/60 leading-5">
-                ⚡ Нажми "Купить билет" — дальше предложим жильё или сохраним PDF.
-              </Text>
-              <View className="flex-row gap-3 pt-1">
-                <Button
-                  title="Купить билет"
-                  size="lg"
-                  variant="primary"
-                  fullWidth
-                  icon={<Feather name="shopping-bag" size={18} color="#F5F8FC" />}
-                />
-                <Button
-                  title="Сохранить план"
-                  variant="outline"
-                  size="lg"
-                  fullWidth
-                  icon={<Feather name="download" size={18} color="#1E2A44" />}
-                />
+          <View style={styles.ticketsContainer}>
+            <Text style={styles.callout}>Даты подставлены: {timing.toLowerCase()}</Text>
+            <Card style={styles.ticketCard} variant="elevated">
+              <Text style={styles.ticketTitle}>Лучшие окна</Text>
+              <Text style={styles.ticketDetail}>Вылет: {departureCity} → {variants[0].city} / {variants[1].city}</Text>
+              <Text style={styles.ticketDetail}>Длительность: {duration}</Text>
+              <Text style={styles.ticketDetail}>Бюджет: {budget} • Климат: {climate}</Text>
+              <Text style={styles.ticketFootnote}>⚡ Нажми "Купить билет" — дальше предложим жильё или сохраним PDF.</Text>
+              <View style={styles.ticketButtons}>
+                <Button title="Купить билет" size="lg" style={styles.primaryTicketButton} />
+                <Button title="Сохранить план" variant="outline" size="lg" />
               </View>
             </Card>
           </View>
@@ -393,59 +311,187 @@ export function RebootFlowScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ padding: 24, paddingBottom: 110, gap: 16 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="flex-row items-center justify-between gap-3">
-          <Button
-            title="Назад"
-            variant="outline"
-            size="sm"
-            onPress={handleBack}
-            icon={<Feather name="chevron-left" size={16} color="#1E2A44" />}
-          />
-          <View className="flex-1">
-            <ProgressBar current={step} total={totalSteps} />
-            <Text className="mt-2 text-center text-xs text-ink/70">Шаг {step} из {totalSteps}</Text>
-          </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <Button title="Назад" variant="secondary" onPress={handleBack} size="sm" />
+          <ProgressBar current={step} total={totalSteps} />
+          <Text style={styles.stepLabel}>Шаг {step} из {totalSteps}</Text>
         </View>
 
-        <Card variant="outlined" className="space-y-3 border-primary/20">
-          <Text className="text-xl font-extrabold text-ink">{stepTitle}</Text>
-          <Text className="text-base text-ink/70 leading-6">{renderStepDescription()}</Text>
-          <View className="flex-row flex-wrap gap-2 pt-1">
-            <SelectableChip label="PDF план" selected={false} onPress={() => {}} size="sm" />
-            <SelectableChip label="Без решений" selected onPress={() => {}} size="sm" />
-            <SelectableChip label="2 варианта" selected onPress={() => {}} size="sm" />
-          </View>
-        </Card>
+        <Text style={styles.title}>{stepTitle}</Text>
+        <Text style={styles.subtitle}>{renderStepDescription()}</Text>
 
         {renderStepContent()}
       </ScrollView>
 
-      <View className="absolute left-0 right-0 bottom-0 bg-background border-t border-primary/15 px-6 py-4">
-        <View className="flex-row items-center gap-3">
-          <Button
-            title="Назад"
-            onPress={handleBack}
-            variant="outline"
-            size="lg"
-            className="flex-1"
-            icon={<Feather name="arrow-left" size={18} color="#1E2A44" />}
-          />
+      <View style={styles.footer}>
+        <View style={styles.footerButtons}>
+          <Button title="Назад" onPress={handleBack} variant="outline" size="lg" style={styles.backButton} />
           <Button
             title={isLastStep ? 'Готово' : 'Дальше'}
             onPress={handleNext}
             variant="accent"
             size="lg"
-            className="flex-[1.6]"
-            icon={<Feather name="arrow-right" size={18} color="#F5F8FC" />}
+            style={styles.nextButton}
           />
         </View>
       </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  content: {
+    padding: Spacing.lg,
+    paddingBottom: Spacing.xl,
+    gap: Spacing.md,
+  },
+  header: {
+    gap: Spacing.sm,
+  },
+  stepLabel: {
+    textAlign: 'center',
+    color: Colors.textMuted,
+    fontSize: FontSize.sm,
+  },
+  title: {
+    fontSize: FontSize.xxxl,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+    textAlign: 'left',
+  },
+  subtitle: {
+    fontSize: FontSize.md,
+    color: Colors.textSecondary,
+  },
+  cardsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.md,
+  },
+  intentCard: {
+    width: '47%',
+    padding: Spacing.md,
+    gap: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+  },
+  cardTitle: {
+    fontSize: FontSize.lg,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  cardTitleSelected: {
+    color: Colors.textOnPrimary,
+  },
+  selectedCard: {
+    borderColor: Colors.primary,
+    borderWidth: 2,
+    backgroundColor: Colors.primaryLight,
+  },
+  stepSection: {
+    gap: Spacing.md,
+  },
+  sectionLabel: {
+    fontSize: FontSize.lg,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  inlineChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  topSpacing: {
+    marginTop: Spacing.sm,
+  },
+  resultContainer: {
+    gap: Spacing.md,
+  },
+  callout: {
+    fontSize: FontSize.md,
+    color: Colors.textSecondary,
+  },
+  variantCard: {
+    padding: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  variantHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  variantLabel: {
+    fontSize: FontSize.sm,
+    color: Colors.textMuted,
+  },
+  variantCity: {
+    fontSize: FontSize.xxl,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+  },
+  variantTagline: {
+    fontSize: FontSize.md,
+    color: Colors.textSecondary,
+  },
+  subheading: {
+    fontSize: FontSize.lg,
+    fontWeight: '700',
+    marginTop: Spacing.sm,
+    color: Colors.textPrimary,
+  },
+  bullet: {
+    fontSize: FontSize.md,
+    color: Colors.textSecondary,
+    lineHeight: 20,
+  },
+  ticketsContainer: {
+    gap: Spacing.md,
+  },
+  ticketCard: {
+    padding: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  ticketTitle: {
+    fontSize: FontSize.xl,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+  },
+  ticketDetail: {
+    fontSize: FontSize.md,
+    color: Colors.textSecondary,
+  },
+  ticketFootnote: {
+    fontSize: FontSize.sm,
+    color: Colors.textMuted,
+  },
+  ticketButtons: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    marginTop: Spacing.sm,
+  },
+  primaryTicketButton: {
+    flex: 1,
+  },
+  footer: {
+    padding: Spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    backgroundColor: Colors.background,
+  },
+  footerButtons: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  backButton: {
+    flex: 1,
+  },
+  nextButton: {
+    flex: 2,
+  },
+});
+
